@@ -17,6 +17,7 @@ export default function Research() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
   const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState("");
   const [history, setHistory] = useState<any[]>([]);
 
   const loadHistory = () => api.get("/ai/research").then((r) => setHistory(r.research)).catch(() => {});
@@ -30,11 +31,13 @@ export default function Research() {
 
   const research = async (query: string) => {
     if (!query.trim()) return;
-    setLoading(true); setResult(null); setStep(0);
+    setLoading(true); setResult(null); setError(""); setStep(0);
     try {
       const res = await api.post("/ai/research", { query: query.trim() });
       setResult(res); loadHistory();
-    } catch (e: any) { setResult({ report: e.message, sources: [] }); }
+    } catch (e: any) {
+      setError(e?.message || "Research is temporarily unavailable. Please try again.");
+    }
     finally { setLoading(false); }
   };
 
@@ -49,6 +52,19 @@ export default function Research() {
               <AppText weight="semibold" style={{ marginTop: spacing.md }}>{STEPS[step]}</AppText>
             </View>
           )}
+
+          {!loading && error ? (
+            <Card style={{ marginBottom: spacing.lg, borderColor: colors.error }}>
+              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: spacing.sm }}>
+                <Icon name="alert-circle-outline" size={20} color={colors.error} />
+                <AppText weight="bold" size="lg" style={{ marginLeft: 6 }}>Couldn{"'"}t complete research</AppText>
+              </View>
+              <AppText muted style={{ lineHeight: 22 }}>{error}</AppText>
+              <Pressable testID="research-retry" onPress={() => research(q)} style={{ marginTop: spacing.md, alignSelf: "flex-start", backgroundColor: colors.brandPrimary, paddingHorizontal: spacing.lg, height: 44, borderRadius: radius.md, alignItems: "center", justifyContent: "center" }}>
+                <AppText weight="bold" color="#fff">Try Again</AppText>
+              </Pressable>
+            </Card>
+          ) : null}
 
           {result && (
             <Card style={{ marginBottom: spacing.lg }}>
@@ -73,7 +89,7 @@ export default function Research() {
             </Card>
           )}
 
-          {!loading && !result && (
+          {!loading && !result && !error && (
             history.length === 0 ? (
               <EmptyState icon="globe-outline" title="Research anything" subtitle="Ask a question and Chatly will search the web, compare sources and write a cited report." />
             ) : (

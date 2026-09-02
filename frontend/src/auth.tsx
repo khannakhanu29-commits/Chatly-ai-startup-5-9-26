@@ -100,11 +100,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
         api.get<{ user: User }>("/auth/me")
           .then((res) => { setUserState(res.user); storage.setItem(USER_KEY, res.user as any); })
-          .catch(async (e) => {
-            const m = String(e?.message || "").toLowerCase();
-            const authErr = m.includes("token") || m.includes("authenticat") || m.includes("not found") || m.includes("verify");
-            // Only drop the session on a real auth failure; keep it on transient/offline errors.
-            if (authErr) {
+          .catch(async (e: any) => {
+            // Only drop the session on a real auth failure (401/403). Keep it on
+            // transient/offline/server errors so users aren't logged out for no reason.
+            const isAuthError =
+              e?.status === 401 || e?.status === 403 || e?.category === "auth";
+            if (isAuthError) {
               await storage.secureRemove(TOKEN_KEY);
               await storage.removeItem(USER_KEY);
               setToken(null);

@@ -13,9 +13,12 @@ import { AuthProvider } from "@/src/auth";
 import { WsProvider } from "@/src/ws";
 import { ToastProvider } from "@/src/ui";
 import { CallProvider } from "@/src/calls";
+import { ErrorBoundary } from "@/src/ErrorBoundary";
+import { installGlobalErrorHandlers } from "@/src/globalErrors";
 
 LogBox.ignoreAllLogs(true);
 SplashScreen.preventAutoHideAsync();
+installGlobalErrorHandlers();
 
 function ThemedStatusBar() {
   const { isDark } = useTheme();
@@ -33,28 +36,30 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <KeyboardProvider>
-          <ThemeProvider>
-            <AuthProvider>
-              <WsProvider>
-                <ToastProvider>
-                  <CallProvider>
-                    <ThemedStatusBar />
-                    <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
-                      <Stack.Screen name="index" />
-                      <Stack.Screen name="(auth)" />
-                      <Stack.Screen name="(tabs)" />
-                      <Stack.Screen name="chat/[id]" />
-                      <Stack.Screen name="assistant" options={{ presentation: "card" }} />
-                    </Stack>
-                  </CallProvider>
-                </ToastProvider>
-              </WsProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </KeyboardProvider>
-      </SafeAreaProvider>
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <KeyboardProvider>
+            <ThemeProvider>
+              <AuthProvider>
+                <WsProvider>
+                  <ToastProvider>
+                    <CallProvider>
+                      <ThemedStatusBar />
+                      <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
+                        <Stack.Screen name="index" />
+                        <Stack.Screen name="(auth)" />
+                        <Stack.Screen name="(tabs)" />
+                        <Stack.Screen name="chat/[id]" />
+                        <Stack.Screen name="assistant" options={{ presentation: "card" }} />
+                      </Stack>
+                    </CallProvider>
+                  </ToastProvider>
+                </WsProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </KeyboardProvider>
+        </SafeAreaProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }
