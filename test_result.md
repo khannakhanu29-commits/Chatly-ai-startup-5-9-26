@@ -659,7 +659,7 @@ historical_log:
       1. A sends request to B → 200 {status:"pending"} ✓
       2. A sends duplicate request → 200 {status:"pending"} (no crash) ✓
       3. A tries to add self → 400 "You cannot add yourself." ✓
-      4. B lists incoming requests → 200, includes A with request_id=3b1e2298-9d42-4f01-b9e0-5a04448139e6 ✓
+      4. B lists incoming requests → 200, includes A with request_id=jovial-shaw-8 ✓
       5. B views A's profile → 200, relationship.status="request_incoming" with request_id ✓
       6. B accepts request → 200 {status:"accepted"} ✓
       7. A views B → 200, relationship.status="friends" ✓

@@ -4,7 +4,7 @@ import requests
 import json
 import re
 
-BASE_URL = "https://app-preview-launch-4.preview.emergentagent.com/api"
+BASE_URL = "https://jovial-shaw-8.preview.emergentagent.com/api"
 TEST_EMAIL = "demo@chatly.app"
 TEST_PASSWORD = "Demo1234"
 
